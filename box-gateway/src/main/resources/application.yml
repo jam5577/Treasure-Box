@@ -1,0 +1,54 @@
+server:
+  port: 9999
+spring:
+  application:
+    name: GATEWAY
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.52.129:8848
+    gateway:
+      routes:  #用来配置路由规则
+        #admin路由
+        - id: admin_router
+          uri: lb://API-ADMIN
+          predicates:
+            - Path=/admin/**
+          filters:
+            - StripPrefix=1    #过滤器，去掉几级路径，值为int，1为去掉第一级路由，2为去掉第二级
+
+        #category路由
+        - id: category_router
+          uri: lb://API-CATEGORY
+          predicates:
+            - Path=/admin/category/**
+          filters:
+            - StripPrefix=1    #过滤器，去掉几级路径，值为int，1为去掉第一级路由，2为去掉第二级
+
+        #users路由
+        - id: users_router
+          uri: lb://API-USERS
+          predicates:
+            - Path=/users/**
+          filters:
+            - StripPrefix=1    #过滤器，去掉几级路径，值为int，1为去掉第一级路由，2为去掉第二级
+            - Token
+
+        #videos路由
+        - id: videos_router
+          uri: lb://API-VIDEOS
+          predicates:
+            - Path=/videos/**
+          filters:
+            - StripPrefix=1    #过滤器，去掉几级路径，值为int，1为去掉第一级路由，2为去掉第二级
+            - Token
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+
+  redis:
+    host: 192.168.52.129
+    port: 6379
